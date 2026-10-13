@@ -15,6 +15,22 @@ app.get("/", (req, res) => {
         message: "Server is running"
     });
 });
+app.get("/api/users", async (req, res) => {
+    const db = client.db("pa2");
+    const users = db.collection("users");
+    try {
+        const allUsers = await users.find({}, {
+            projection: { password: 0 } // Exclude the password field from the results
+        }).toArray();
+        
+        res.status(200).json(allUsers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+});
 
 app.post("/signup", async (req, res) => {
     const { f_name, l_name, username, password } = req.body;
