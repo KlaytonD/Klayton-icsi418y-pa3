@@ -102,6 +102,39 @@ app.get("/api/projects", async (req, res) => {
         });
     }
 });
+
+app.get("/api/projects/:projectId/members", async (req, res) => {
+    const { projectId } = req.params;
+    const db = client.db("pa2");
+    const memberships = db.collection("memberships");
+    const projects = db.collection("projects");
+
+    if (!ObjectId.isValid(projectId)) {
+        return res.status(400).json({
+            message: "Invalid project ID"
+        });
+    }
+
+    try {
+        const id = new ObjectId(projectId);
+        const existingProject = await projects.findOne({ _id: id });
+
+        if (!existingProject) {
+            return res.status(404).json({
+                message: "Project does not exist"
+            });
+        }
+
+        const allMembers = await memberships.find({ project_id: id }).toArray();
+        res.status(200).json(allMembers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+});
+
 app.post("/signup", async (req, res) => {
     const { f_name, l_name, username, password } = req.body;
 

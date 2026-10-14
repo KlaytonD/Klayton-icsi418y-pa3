@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react';
+import ProjectMembers from './ProjectMembers';
 
 function ProjectList() {
     const [projects, setProjects] = useState([]);
@@ -37,6 +38,7 @@ function ProjectList() {
                                 users.find(user => user._id === project.project_lead_id)?.username || "Unknown"
                             }
                         </p>
+                        <ProjectMembers projectId={project._id} />
                     </div>
                 ))}
         </div>
