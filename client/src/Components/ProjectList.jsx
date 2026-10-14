@@ -38,7 +38,10 @@ function ProjectList() {
                                 users.find(user => user._id === project.project_lead_id)?.username || "Unknown"
                             }
                         </p>
-                        <ProjectMembers projectId={project._id} />
+                        <ProjectMembers 
+                        projectId={project._id}
+                        projectLeadId={project.project_lead_id}
+                        />
                     </div>
                 ))}
         </div>

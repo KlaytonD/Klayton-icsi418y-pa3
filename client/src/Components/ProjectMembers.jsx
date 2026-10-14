@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 
-function ProjectMembers({projectId}) {
+function ProjectMembers({projectId, projectLeadId}) {
     const [members, setMembers] = useState([]);
     const [users, setUsers] = useState([]);
     const [selectUserID, setSelectUserID] = useState("");
@@ -51,6 +51,24 @@ function ProjectMembers({projectId}) {
             console.error("Error adding member:", error);
         }
     }
+    async function handleRemoveMember(userId) {
+        try {
+            const response = await fetch(`http://localhost:9000/api/projects/${projectId}/members/${userId}`, {
+                method: "DELETE"
+            });
+            const data = await response.json();
+            if (response.ok) {
+                const memberResponse = await fetch(`http://localhost:9000/api/projects/${projectId}/members`);
+                const updatedMembers = await memberResponse.json();
+                setMembers(updatedMembers);
+                alert("Member removed successfully!");
+            } else {
+                alert(data.message);
+            }
+        } catch (error) {
+            console.error("Error removing member:", error);
+        }
+    }
     return (
         <div>
             <h3>Project Members</h3>
@@ -58,6 +76,11 @@ function ProjectMembers({projectId}) {
                 {members.map((member) => (
                     <p 
                         key={member._id}>{users.find((user) => user._id === member.user_id)?.username || "Unknown"}
+                        {member.user_id !== projectLeadId && (
+                            <button type="button" onClick={() => handleRemoveMember(member.user_id)}>
+                                Remove
+                            </button>
+                        )}
                     </p>
                 ))}
             <form onSubmit={handleAddMember}>

@@ -188,6 +188,51 @@ app.post("/api/projects/:projectId/members", async (req, res) => {
     }
 });
 
+app.delete("/api/projects/:projectId/members/:userId", async (req, res) => {
+    const { projectId, userId } = req.params;
+    const db = client.db("pa2");
+    const users = db.collection("users");
+    const memberships = db.collection("memberships");
+    const projects = db.collection("projects");
+
+    if (!ObjectId.isValid(projectId) || !ObjectId.isValid(userId)) {
+        return res.status(400).json({
+            message: "Invalid project ID or user ID"
+        });
+    }
+    try {
+        const id = new ObjectId(projectId);
+        const memberId = new ObjectId(userId);
+
+        const existingProject = await projects.findOne({ _id: id });
+        if (!existingProject) {
+            return res.status(404).json({
+                message: "Project does not exist"
+            });
+        }
+        if (existingProject.project_lead_id.equals(memberId)) {
+            return res.status(403).json({
+                message: "Cannot remove the project lead"
+            });
+        }
+        const result = await memberships.deleteOne({ project_id: id, user_id: memberId });
+        if (result.deletedCount === 0) {
+            return res.status(404).json({
+                message: "Member not found in the project"
+            });
+        }
+        res.status(200).json({
+            message: "Member removed successfully"
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+});
+
 app.post("/signup", async (req, res) => {
     const { f_name, l_name, username, password } = req.body;
 
