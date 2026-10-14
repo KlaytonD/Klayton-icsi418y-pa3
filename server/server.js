@@ -135,6 +135,59 @@ app.get("/api/projects/:projectId/members", async (req, res) => {
     }
 });
 
+app.post("/api/projects/:projectId/members", async (req, res) => {
+    const { projectId } = req.params;
+    const { user_id } = req.body;
+
+    const db = client.db("pa2");
+    const projects = db.collection("projects");
+    const users = db.collection("users");
+    const memberships = db.collection("memberships");
+
+    if (!ObjectId.isValid(projectId) || !ObjectId.isValid(user_id)) {
+        return res.status(400).json({
+            message: "Invalid project ID or user ID"
+        });
+    }
+    try {
+        const id = new ObjectId(projectId);
+        const userId = new ObjectId(user_id);
+
+        const existingProject = await projects.findOne({ _id: id });
+        if (!existingProject) {
+            return res.status(404).json({
+                message: "Project does not exist"
+            });
+        }
+
+        const existingUser = await users.findOne({ _id: userId });
+        if (!existingUser) {
+            return res.status(404).json({
+                message: "User does not exist"
+            });
+        }
+        const existingMembership = await memberships.findOne({ project_id: id, user_id: userId });
+        if (existingMembership) {
+            return res.status(409).json({
+                message: "User is already a member of this project"
+            });
+        }
+        await memberships.insertOne({
+            project_id: id,
+            user_id: userId
+        });
+        res.status(201).json({
+            message: "Member added successfully"
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+});
+
 app.post("/signup", async (req, res) => {
     const { f_name, l_name, username, password } = req.body;
 
