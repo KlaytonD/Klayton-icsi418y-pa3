@@ -47,28 +47,37 @@ function CreateProject() {
         <div>
             <h2>Create Project</h2>
             <form onSubmit={handleSubmit}>
-            <label>Project Name:</label>
-            <input type="text" value ={name} onChange={(e) => setName(e.target.value)} />
-            
-            <label>Description:</label>
-            <textarea value ={description} onChange={(e) => setDescription(e.target.value)} />
-            
-            <label>Status:</label>
-            <select value={status} onChange={(e) => setStatus(e.target.value)}>
-                <option value="Planning">Planning</option>
-                <option value="Active">Active</option>
-                <option value="Completed">Completed</option>
-            </select>
+                <div>
+                    <label>Project Name:</label>
+                    <input type="text" value ={name} onChange={(e) => setName(e.target.value)} />
+                </div>
 
-            <label>Project Lead:</label>
-            <select value={projectLeadId} onChange={(e) => setProjectLeadId(e.target.value)}>
-                <option value="">Select a user</option>
-                {users.map(user => (
-                    <option key={user._id} value={user._id}>
-                        {user.username}
-                    </option>
-                ))}
-            </select>
+                <div>
+                    <label>Description:</label>
+                    <textarea value ={description} onChange={(e) => setDescription(e.target.value)} />
+                </div>
+
+                <div>
+                    <label>Status:</label>
+                    <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                        <option value="Planning">Planning</option>
+                        <option value="Active">Active</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Project Lead:</label>
+                    <select value={projectLeadId} onChange={(e) => setProjectLeadId(e.target.value)}>
+                        <option value="">Select a user</option>
+                        {users.map(user => (
+                            <option key={user._id} value={user._id}>
+                                {user.username}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                
             <button type="submit">Create Project</button>
             </form>
         </div>

@@ -6,7 +6,7 @@ import "./App.css";
 
 function App() {
   return (
-    <div className="app-container">
+    <div className="app">
       <div className="top-row">
         <Signup />
         <Login />
