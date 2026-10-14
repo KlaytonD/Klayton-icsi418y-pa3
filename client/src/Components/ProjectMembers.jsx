@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 
-function ProjectMembers({projectId, projectLeadId}) {
+function ProjectMembers({projectId, projectLeadId, refreshUsers}) {
     const [members, setMembers] = useState([]);
     const [users, setUsers] = useState([]);
     const [selectUserID, setSelectUserID] = useState("");
@@ -20,7 +20,7 @@ function ProjectMembers({projectId, projectLeadId}) {
         }
 
         fetchMembers();
-    }, [projectId]);
+    }, [projectId, refreshUsers]);
 
     async function handleAddMember(event) {
         event.preventDefault();
@@ -71,7 +71,7 @@ function ProjectMembers({projectId, projectLeadId}) {
     }
     return (
         <div>
-            <h3>Project Members</h3>
+            <h4>Project Members</h4>
 
                 {members.map((member) => (
                     <p 

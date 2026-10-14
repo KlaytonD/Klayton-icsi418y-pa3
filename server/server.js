@@ -59,11 +59,13 @@ app.post("/api/projects", async (req, res) => {
         const leadId = new ObjectId(project_lead_id);
 
         const existingUser = await users.findOne({ _id: leadId });
+
         if (!existingUser) {
             return res.status(404).json({
                 message: "Project lead does not exist"
             });
         }
+        
         const result = await projects.insertOne({
             name,
             description,
@@ -77,14 +79,18 @@ app.post("/api/projects", async (req, res) => {
             project_id: projectId,
             user_id: leadId
         });
+
         res.status(201).json({
             message: "Project created successfully",
         });
+
     }catch (error) {
+
         console.error(error);
         res.status(500).json({
             message: "Internal server error"
         });
+        
     }
 });
 

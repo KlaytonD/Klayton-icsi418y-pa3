@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import ProjectMembers from './ProjectMembers';
 
-function ProjectList({refreshProjects}) {
+function ProjectList({refreshProjects, refreshUsers}) {
     const [projects, setProjects] = useState([]);
     const [users, setUsers] = useState([]);
 
@@ -20,7 +20,7 @@ function ProjectList({refreshProjects}) {
         }
 
         fetchProjects();
-    }, [refreshProjects]);
+    }, [refreshProjects, refreshUsers]);
 
     return (
         <div>
@@ -28,7 +28,9 @@ function ProjectList({refreshProjects}) {
 
                 {projects.map(project => (
                     <div key={project._id}>
+
                         <h3>{project.name}</h3>
+
                         <p>{project.description}</p>
                         <p>
                             Status: {project.status}
@@ -39,8 +41,9 @@ function ProjectList({refreshProjects}) {
                             }
                         </p>
                         <ProjectMembers 
-                        projectId={project._id}
-                        projectLeadId={project.project_lead_id}
+                            projectId={project._id}
+                            projectLeadId={project.project_lead_id}
+                            refreshUsers={refreshUsers}
                         />
                     </div>
                 ))}

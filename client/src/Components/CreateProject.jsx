@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 
-function CreateProject({onProjectCreated}) {
+function CreateProject({onProjectCreated, refreshUsers}) {
     const [users, setUsers] = useState([]);
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
@@ -19,7 +19,7 @@ function CreateProject({onProjectCreated}) {
         }
 
         fetchUsers();
-    }, []);
+    }, [refreshUsers]);
 
     async function handleSubmit(event) {
         event.preventDefault();

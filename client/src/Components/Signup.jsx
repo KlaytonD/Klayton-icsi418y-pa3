@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Signup() {
+function Signup({onUserCreated}) {
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -21,6 +21,7 @@ function Signup() {
             });
             const data = await response.json();
             if (response.ok) {
+                onUserCreated();
                 setMessage(data.message);
             } else {
                 setMessage(data.message || "Signup failed");
