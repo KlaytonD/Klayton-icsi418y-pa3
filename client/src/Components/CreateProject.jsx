@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 
-function CreateProject() {
+function CreateProject({onProjectCreated}) {
     const [users, setUsers] = useState([]);
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
@@ -23,6 +23,12 @@ function CreateProject() {
 
     async function handleSubmit(event) {
         event.preventDefault();
+
+        if (!name.trim() || !description.trim() || !projectLeadId) {
+            alert('Please fill in all the project fields.');
+            return;
+        }
+
         try {
             const response = await fetch('http://localhost:9000/api/projects', {
                 method: 'POST',
@@ -37,7 +43,16 @@ function CreateProject() {
                 })
             });
             const data = await response.json();
-            console.log(data);
+            if (response.ok) {
+                alert('Project created successfully!');
+                setName("");
+                setDescription("");
+                setStatus('Planning');
+                setProjectLeadId("");
+                onProjectCreated();
+            }else {
+                alert(data.message || 'Failed to create project.');
+            }
         } catch (error) {
             console.error('Error creating project:', error);
         }
@@ -77,7 +92,7 @@ function CreateProject() {
                         ))}
                     </select>
                 </div>
-                
+
             <button type="submit">Create Project</button>
             </form>
         </div>

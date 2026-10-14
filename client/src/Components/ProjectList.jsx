@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import ProjectMembers from './ProjectMembers';
 
-function ProjectList() {
+function ProjectList({refreshProjects}) {
     const [projects, setProjects] = useState([]);
     const [users, setUsers] = useState([]);
 
@@ -20,7 +20,7 @@ function ProjectList() {
         }
 
         fetchProjects();
-    }, []);
+    }, [refreshProjects]);
 
     return (
         <div>
