@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { MongoClient } = require("mongodb")
+const { MongoClient, ObjectId } = require("mongodb")
 const client = new MongoClient(process.env.MONGO_URI);
 
 const express = require("express");
@@ -22,9 +22,65 @@ app.get("/api/users", async (req, res) => {
         const allUsers = await users.find({}, {
             projection: { password: 0 } // Exclude the password field from the results
         }).toArray();
-        
+
         res.status(200).json(allUsers);
     } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+});
+
+app.post("/api/projects", async (req, res) => {
+    const { name, description, status, project_lead_id } = req.body;
+
+    if (!name || !description || !status || !project_lead_id) {
+        return res.status(400).json({
+            message: "Required information is missing"
+        });
+    }
+    if (!["Planning", "Active", "Completed"].includes(status)) {
+        return res.status(400).json({
+            message: "Invalid project status"
+        });
+    }
+    const db = client.db("pa2");
+    const users = db.collection("users");
+    const projects = db.collection("projects");
+    const memberships = db.collection("memberships");
+
+    if (!ObjectId.isValid(project_lead_id)) {
+        return res.status(400).json({
+            message: "Invalid project lead ID"
+        });
+    }
+    try {
+        const leadId = new ObjectId(project_lead_id);
+
+        const existingUser = await users.findOne({ _id: leadId });
+        if (!existingUser) {
+            return res.status(404).json({
+                message: "Project lead does not exist"
+            });
+        }
+        const result = await projects.insertOne({
+            name,
+            description,
+            status,
+            project_lead_id: leadId
+        });
+
+        const projectId = result.insertedId;
+
+        await memberships.insertOne({
+            project_id: projectId,
+            user_id: leadId
+        });
+        res.status(201).json({
+            message: "Project created successfully",
+        });
+    }catch (error) {
         console.error(error);
         res.status(500).json({
             message: "Internal server error"
