@@ -88,6 +88,20 @@ app.post("/api/projects", async (req, res) => {
     }
 });
 
+app.get("/api/projects", async (req, res) => {
+    const db = client.db("pa2");
+    const projects = db.collection("projects");
+
+    try {
+        const allProjects = await projects.find({}).toArray();
+        res.status(200).json(allProjects);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+});
 app.post("/signup", async (req, res) => {
     const { f_name, l_name, username, password } = req.body;
 

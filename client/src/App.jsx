@@ -1,6 +1,7 @@
 import Signup from "./Components/Signup";
 import Login from "./Components/Login";
 import CreateProject from "./Components/CreateProject";
+import ProjectList from "./Components/ProjectList";
 import "./App.css";
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
       <Signup />
       <Login />
       <CreateProject />
+      <ProjectList />
     </div>
   );
 }
