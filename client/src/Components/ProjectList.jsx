@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
 import ProjectMembers from './ProjectMembers';
+import CreateStory from './CreateStory';
 
 function ProjectList({refreshProjects, refreshUsers}) {
     const [projects, setProjects] = useState([]);
@@ -45,6 +46,7 @@ function ProjectList({refreshProjects, refreshUsers}) {
                             projectLeadId={project.project_lead_id}
                             refreshUsers={refreshUsers}
                         />
+                        <CreateStory projectId={project._id} />
                     </div>
                 ))}
         </div>
