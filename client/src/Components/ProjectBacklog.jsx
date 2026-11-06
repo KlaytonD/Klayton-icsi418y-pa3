@@ -108,6 +108,36 @@ function ProjectBacklog({ projectId }) {
         }
     }
 
+    async function handleDelete(story) {
+        const confirmed = window.confirm("Are you sure you want to delete this user story?");
+        
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:9000/api/projects/${projectId}/stories/${story._id}`, {
+                method: 'DELETE'
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.message);
+                return;
+            }
+
+            alert(data.message);
+
+            setStories((prevStories) => prevStories.filter((s) => s._id !== story._id));
+
+            setEditingStory(null);
+        } catch (error) {
+            console.error(error);
+            alert("Error deleting user story");
+        }
+    }
+
     return (
         <div>
             <h3>Project Backlog</h3>
@@ -129,6 +159,10 @@ function ProjectBacklog({ projectId }) {
                         </p>
                         <button onClick={() => handleEdit(story)}>
                             Edit
+                        </button>
+
+                        <button onClick={() => handleDelete(story)}>
+                            Delete
                         </button>
 
                         {editingStory?._id === story._id && (

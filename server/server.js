@@ -453,6 +453,46 @@ app.put("/api/projects/:projectId/stories/:storyId", async (req, res) => {
     }
     
 });
+
+app.delete("/api/projects/:projectId/stories/:storyId", async (req, res) => {
+    const { projectId, storyId } = req.params;
+    const db = client.db("pa2");
+    const projects = db.collection("projects");
+    const stories = db.collection("stories");
+
+    if (!ObjectId.isValid(projectId) || !ObjectId.isValid(storyId)) {
+        return res.status(400).json({
+            message: "Invalid project ID or story ID"
+        });
+    }
+
+    try {
+        const id = new ObjectId(projectId);
+        const storyIdObj = new ObjectId(storyId);
+
+        const existingProject = await projects.findOne({ _id: id });
+        if (!existingProject) {
+            return res.status(404).json({
+                message: "Project does not exist"
+            });
+        }
+
+        const result = await stories.deleteOne({ _id: storyIdObj, project_id: id });
+        if (result.deletedCount === 0) {
+            return res.status(404).json({
+                message: "User story not found"
+            });
+        }
+        res.status(200).json({
+            message: "User story deleted successfully"
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+});
 app.post("/signup", async (req, res) => {
     const { f_name, l_name, username, password } = req.body;
 
