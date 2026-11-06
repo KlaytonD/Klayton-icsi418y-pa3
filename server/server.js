@@ -351,6 +351,108 @@ app.get("/api/projects/:projectId/stories", async (req, res) => {
         });
     }
 });
+
+app.put("/api/projects/:projectId/stories/:storyId", async (req, res) => {
+    const { projectId, storyId } = req.params;
+    const { title, description, priority, status, assigned_user_id } = req.body;
+
+    const db = client.db("pa2");
+    const projects = db.collection("projects");
+    const stories = db.collection("stories");
+    const users = db.collection("users");
+    const memberships = db.collection("memberships");
+
+    if (!ObjectId.isValid(projectId) || !ObjectId.isValid(storyId)) {
+        return res.status(400).json({
+            message: "Invalid project ID or story ID"
+        });
+    }
+
+    if (typeof title !== 'string' || !title.trim() || typeof description !== 'string' || !description.trim()) {
+        return res.status(400).json({
+            message: "Title and description are required"
+        });
+    }
+
+    if (!["High", "Medium", "Low"].includes(priority)) {
+        return res.status(400).json({
+            message: "Invalid priority value"
+        });
+    }
+    if (!["To Do", "In Progress", "Done"].includes(status)) {
+        return res.status(400).json({
+            message: "Invalid status value"
+        });
+    }
+
+    try {
+        const id = new ObjectId(projectId);
+        const storyIdObj = new ObjectId(storyId);
+
+        const existingProject = await projects.findOne({ _id: id });
+        if (!existingProject) {
+            return res.status(404).json({
+                message: "Project does not exist"
+            });
+        }
+
+        const existingStory = await stories.findOne({ _id: storyIdObj, project_id: id });
+        if (!existingStory) {
+            return res.status(404).json({
+                message: "User story does not exist in this project"
+            });
+        }
+        let assignedUserId = null;
+        if (assigned_user_id !== null && assigned_user_id !== undefined && assigned_user_id !== "") {
+            if (typeof assigned_user_id !== 'string' || !ObjectId.isValid(assigned_user_id)) {
+                return res.status(400).json({
+                    message: "Invalid assigned user ID"
+                });
+            }
+            assignedUserId = new ObjectId(assigned_user_id);
+
+            const existingUser = await users.findOne({ _id: assignedUserId });
+            if (!existingUser) {
+                return res.status(404).json({
+                    message: "Assigned user does not exist"
+                });
+            }
+            const existingMembership = await memberships.findOne({ project_id: id, user_id: assignedUserId });
+            if (!existingMembership) {
+                return res.status(403).json({
+                    message: "Assigned user is not a member of the project"
+                });
+            }
+        }
+        const result = await stories.updateOne(
+        { _id: storyIdObj, project_id: id },
+        {
+            $set: {
+                title: title.trim(),
+                description: description.trim(),
+                priority,
+                status,
+                assigned_user_id: assignedUserId
+            }
+        }
+    );
+    if (result.matchedCount === 0) {
+        return res.status(404).json({
+            message: "User story not found"
+        });
+    }
+    res.status(200).json({
+        message: "User story updated successfully"
+    });
+    }   
+    catch (error) {
+            console.error(error);
+            res.status(500).json({
+                message: "Internal server error"
+            });
+    }
+    
+});
 app.post("/signup", async (req, res) => {
     const { f_name, l_name, username, password } = req.body;
 
