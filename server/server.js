@@ -200,6 +200,7 @@ app.delete("/api/projects/:projectId/members/:userId", async (req, res) => {
     const users = db.collection("users");
     const memberships = db.collection("memberships");
     const projects = db.collection("projects");
+    const stories = db.collection("stories");
 
     if (!ObjectId.isValid(projectId) || !ObjectId.isValid(userId)) {
         return res.status(400).json({
@@ -219,6 +220,12 @@ app.delete("/api/projects/:projectId/members/:userId", async (req, res) => {
         if (existingProject.project_lead_id.equals(memberId)) {
             return res.status(403).json({
                 message: "Cannot remove the project lead"
+            });
+        }
+        const assignedStory = await stories.findOne({ project_id: id, assigned_user_id: memberId });
+        if (assignedStory) {
+            return res.status(409).json({
+                message: "Cannot remove member with assigned user stories. Reassign, unassign or delete their stories first."
             });
         }
         const result = await memberships.deleteOne({ project_id: id, user_id: memberId });

@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 
-function CreateStory({projectId}) {
+function CreateStory({projectId, onStoryCreated}) {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [priority, setPriority] = useState("Medium");
@@ -55,7 +55,7 @@ function CreateStory({projectId}) {
                 return;
             }
             alert(data.message);
-
+            onStoryCreated();
             // Reset form fields after successful submission
             setTitle("");
             setDescription("");

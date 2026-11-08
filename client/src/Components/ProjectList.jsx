@@ -6,6 +6,7 @@ import ProjectBacklog from './ProjectBacklog';
 function ProjectList({refreshProjects, refreshUsers}) {
     const [projects, setProjects] = useState([]);
     const [users, setUsers] = useState([]);
+    const [storyRefresh, setStoryRefresh] = useState(0);
 
     useEffect(() => {
         async function fetchProjects() {
@@ -47,8 +48,8 @@ function ProjectList({refreshProjects, refreshUsers}) {
                             projectLeadId={project.project_lead_id}
                             refreshUsers={refreshUsers}
                         />
-                        <CreateStory projectId={project._id} />
-                        <ProjectBacklog projectId={project._id} />
+                        <CreateStory projectId={project._id} onStoryCreated={() => setStoryRefresh((prev) => prev + 1)} />
+                        <ProjectBacklog projectId={project._id} storyRefresh={storyRefresh} />
                     </div>
                 ))}
         </div>

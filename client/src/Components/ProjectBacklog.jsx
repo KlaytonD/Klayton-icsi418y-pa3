@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-function ProjectBacklog({ projectId }) {
+function ProjectBacklog({ projectId, storyRefresh }) {
     const [stories, setStories] = useState([]);
     const [users, setUsers] = useState([]);
     const [editingStory, setEditingStory] = useState(null);
@@ -37,7 +37,7 @@ function ProjectBacklog({ projectId }) {
         }
 
         fetchStories();
-    }, [projectId]);
+    }, [projectId, storyRefresh]);
 
     useEffect(() => {
         async function fetchMembers() {
