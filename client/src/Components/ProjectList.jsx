@@ -7,6 +7,8 @@ function ProjectList({refreshProjects, refreshUsers}) {
     const [projects, setProjects] = useState([]);
     const [users, setUsers] = useState([]);
     const [storyRefresh, setStoryRefresh] = useState(0);
+    const [selectedProjectId, setSelectedProjectId] = useState("");
+    const [memberRefresh, setMemberRefresh] = useState(0);
 
     useEffect(() => {
         async function fetchProjects() {
@@ -25,33 +27,47 @@ function ProjectList({refreshProjects, refreshUsers}) {
         fetchProjects();
     }, [refreshProjects, refreshUsers]);
 
+    const selectedProject = projects.find(project => project._id === selectedProjectId);
+
     return (
         <div>
             <h2>Projects</h2>
 
+            <select
+                value={selectedProjectId}
+                onChange={(e) => setSelectedProjectId(e.target.value)}
+            >
+                <option value="">Select a project</option>
                 {projects.map(project => (
-                    <div key={project._id}>
+                    <option key={project._id} value={project._id}>
+                        {project.name}
+                    </option>
+                ))}
+            </select>
 
-                        <h3>{project.name}</h3>
+            {selectedProject && (
+                <div>
+                    <h3>{selectedProject.name}</h3>
 
-                        <p>{project.description}</p>
+                        <p>{selectedProject.description}</p>
                         <p>
-                            Status: {project.status}
+                            Status: {selectedProject.status}
                         </p>
                         <p>
                             Project Lead: {
-                                users.find(user => user._id === project.project_lead_id)?.username || "Unknown"
+                                users.find(user => user._id === selectedProject.project_lead_id)?.username || "Unknown"
                             }
                         </p>
                         <ProjectMembers 
-                            projectId={project._id}
-                            projectLeadId={project.project_lead_id}
+                            projectId={selectedProject._id}
+                            projectLeadId={selectedProject.project_lead_id}
                             refreshUsers={refreshUsers}
+                            onMembersChange={() => setMemberRefresh((prev) => prev + 1)}
                         />
-                        <CreateStory projectId={project._id} onStoryCreated={() => setStoryRefresh((prev) => prev + 1)} />
-                        <ProjectBacklog projectId={project._id} storyRefresh={storyRefresh} />
+                        <CreateStory projectId={selectedProject._id} onStoryCreated={() => setStoryRefresh((prev) => prev + 1)} memberRefresh={memberRefresh} />
+                        <ProjectBacklog projectId={selectedProject._id} storyRefresh={storyRefresh} memberRefresh={memberRefresh} />
                     </div>
-                ))}
+                )}
         </div>
     );
 }

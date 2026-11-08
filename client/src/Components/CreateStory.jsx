@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 
-function CreateStory({projectId, onStoryCreated}) {
+function CreateStory({projectId, onStoryCreated, memberRefresh}) {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [priority, setPriority] = useState("Medium");
@@ -30,7 +30,7 @@ function CreateStory({projectId, onStoryCreated}) {
         }
 
         fetchMembers();
-    }, [projectId]);
+    }, [projectId, memberRefresh]);
 
     async function handleSubmit(e) {
         e.preventDefault();

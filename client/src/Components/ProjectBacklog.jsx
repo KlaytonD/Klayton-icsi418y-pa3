@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-function ProjectBacklog({ projectId, storyRefresh }) {
+function ProjectBacklog({ projectId, storyRefresh, memberRefresh }) {
     const [stories, setStories] = useState([]);
     const [users, setUsers] = useState([]);
     const [editingStory, setEditingStory] = useState(null);
@@ -57,7 +57,7 @@ function ProjectBacklog({ projectId, storyRefresh }) {
         }
 
         fetchMembers();
-    }, [projectId]);
+    }, [projectId, memberRefresh]);
 
     function handleEdit(story) {
         setEditingStory(story);

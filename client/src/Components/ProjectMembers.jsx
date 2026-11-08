@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 
-function ProjectMembers({projectId, projectLeadId, refreshUsers}) {
+function ProjectMembers({projectId, projectLeadId, refreshUsers, onMembersChange}) {
     const [members, setMembers] = useState([]);
     const [users, setUsers] = useState([]);
     const [selectUserID, setSelectUserID] = useState("");
@@ -43,6 +43,7 @@ function ProjectMembers({projectId, projectLeadId, refreshUsers}) {
                 const updatedMembers = await memberResponse.json();
                 setMembers(updatedMembers);
                 setSelectUserID("");
+                onMembersChange();
                 alert("Member added successfully!");
             } else {
                 alert(data.message);
@@ -61,6 +62,7 @@ function ProjectMembers({projectId, projectLeadId, refreshUsers}) {
                 const memberResponse = await fetch(`http://localhost:9000/api/projects/${projectId}/members`);
                 const updatedMembers = await memberResponse.json();
                 setMembers(updatedMembers);
+                onMembersChange();
                 alert("Member removed successfully!");
             } else {
                 alert(data.message);
